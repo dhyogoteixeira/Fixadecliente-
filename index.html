@@ -1,185 +1,208 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>DT Driver — Solicitar Corrida (Grátis, sem Google Maps)</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DT Driver — Solicitar Corrida</title>
 
-<!-- Leaflet (MAPA GRATUITO) -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Leaflet (mapa gratuito) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- Leaflet Routing Machine (ROTEAMENTO GRÁTIS) -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
-<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-
-<style>
-  :root{--bg:#0f172a;--card:#0b1220;--accent:#06b6d4;--muted:#9aa4b2;--glass:rgba(255,255,255,0.03)}
-  *{box-sizing:border-box;font-family:Inter,system-ui,Arial}
-  body{margin:0;background:linear-gradient(180deg,#071024,#071a2a);color:#e6eef6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-  .container{width:100%;max-width:980px}
-  header{display:flex;align-items:center;gap:16px;margin-bottom:20px}
-  .logo{width:64px;height:64px;border-radius:12px;background:var(--glass);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
-  h1{margin:0;font-size:20px}
-  .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
-  .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
-  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-  input, textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6eef6}
-  button{background:var(--accent);border:none;padding:10px 12px;border-radius:10px;color:#052027;font-weight:700;cursor:pointer}
-  .muted{color:var(--muted);font-size:13px}
-  #map{height:220px;border-radius:8px}
-  footer{margin-top:12px;color:var(--muted);font-size:13px}
-  @media(max-width:880px){.grid{grid-template-columns:1fr;}}
-</style>
+  <style>
+    :root{--bg:#0f172a;--card:#0b1220;--accent:#06b6d4;--muted:#9aa4b2;--glass: rgba(255,255,255,0.03)}
+    *{box-sizing:border-box;font-family:Inter,system-ui,Arial}
+    body{margin:0;background:linear-gradient(180deg,#071024 0%, #071a2a 100%);color:#e6eef6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .container{width:100%;max-width:980px}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+    .logo{width:64px;height:64px;border-radius:12px;background:var(--glass);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+    h1{margin:0;font-size:20px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input, textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .row{display:flex;gap:8px}
+    button{background:var(--accent);border:none;padding:10px 12px;border-radius:10px;color:#052027;font-weight:700;cursor:pointer}
+    .muted{color:var(--muted);font-size:13px}
+    .map-placeholder{height:220px;border-radius:8px;overflow:hidden}
+    #map{height:100%;width:100%}
+    footer{margin-top:12px;color:var(--muted);font-size:13px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr;}.logo{width:48px;height:48px}.card{padding:14px}}
+  </style>
 </head>
 <body>
-
-<div class="container">
-<header>
-  <div class="logo">DT</div>
-  <div>
-    <h1>DT Driver — Solicitar Corrida</h1>
-    <div class="muted">Mapa e rota grátis (OpenStreetMap + OSRM)</div>
-  </div>
-</header>
-
-<div class="grid">
-  <section class="card">
-    <form id="rideForm">
-
-      <label>Nome do passageiro</label>
-      <input id="name" type="text" placeholder="Ex: João Silva" required>
-
-      <label>Telefone (WhatsApp)</label>
-      <input id="phone" type="tel" placeholder="55 21 99999-9999">
-
-      <label>Local de partida</label>
-      <input id="pickup" type="text" placeholder="Rua, número, bairro">
-
-      <label>Destino</label>
-      <input id="dropoff" type="text" placeholder="Rua, número, bairro">
-
-      <button type="button" id="useMyLocation" style="margin-top:8px;margin-bottom:8px">Usar minha localização</button>
-
-      <label>Observações</label>
-      <textarea id="notes" rows="3"></textarea>
-
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button type="button" id="estimateBtn">Calcular valor</button>
-        <button type="button" id="requestBtn">Solicitar corrida</button>
+  <div class="container">
+    <header>
+      <div class="logo">DT</div>
+      <div>
+        <h1>DT Driver — Solicitar Corrida</h1>
+        <div class="muted">GPS gratuito · OpenStreetMap</div>
       </div>
+    </header>
 
-    </form>
-  </section>
+    <div class="grid">
+      <!-- FORM -->
+      <section class="card">
+        <form id="rideForm">
+          <label for="name">Nome do passageiro</label>
+          <input id="name" type="text" placeholder="Ex: João Silva" required />
 
-  <aside class="card">
-    <h3 id="summaryTitle">Resumo</h3>
-    <div id="summaryContent" class="muted small">Preencha origem e destino.</div>
+          <label for="phone">Telefone (WhatsApp)</label>
+          <input id="phone" type="tel" placeholder="55 21 99999-9999" />
 
-    <div style="height:12px"></div>
-    <div id="map"></div>
+          <label for="pickup">Local de partida</label>
+          <input id="pickup" type="text" placeholder="Rua, número, bairro, cidade" required />
 
-    <div style="height:12px"></div>
-    <div class="muted small">
-      <div><strong>Preço base:</strong> R$ 5,00</div>
-      <div><strong>Preço por km:</strong> R$ 2,50</div>
-      <div><strong>Estimativa:</strong> R$ <span id="estimate">-</span></div>
+          <label for="dropoff">Destino</label>
+          <input id="dropoff" type="text" placeholder="Rua, número, bairro, cidade" required />
+
+          <div style="display:flex;gap:8px;margin-top:8px;margin-bottom:8px">
+            <button type="button" id="useMyLocation">Usar minha localização</button>
+            <div class="muted small">(preenche coordenadas)</div>
+          </div>
+
+          <label for="notes">Observações</label>
+          <textarea id="notes" rows="3" placeholder="Mais bagagem, pets, etc"></textarea>
+
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button id="estimateBtn" type="button">Calcular valor estimado</button>
+            <button id="requestBtn" type="button">Solicitar corrida</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- SIDEBAR -->
+      <aside class="card">
+        <div class="summary">
+          <div class="muted small">Resumo do pedido</div>
+          <h3 id="summaryTitle">Sem pedido</h3>
+          <div id="summaryContent" class="muted small">
+            Preencha origem e destino e clique em "Calcular valor".
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+        <div class="map-placeholder">
+          <div id="map"></div>
+        </div>
+
+        <div style="height:12px"></div>
+        <div class="summary small">
+          <div><strong>Preço por km:</strong> R$ <span id="perKm">2.50</span></div>
+          <div><strong>Estimativa:</strong> R$ <span id="estimate">-</span></div>
+        </div>
+
+        <div style="height:12px"></div>
+        <label for="ownerPhone" class="muted small">Número do motorista (WhatsApp)</label>
+        <input id="ownerPhone" type="tel" placeholder="55XXXXXXXXXXX" />
+      </aside>
     </div>
 
-    <label style="margin-top:12px">Número do motorista (WhatsApp)</label>
-    <input id="ownerPhone" type="tel" placeholder="55XXXXXXXXXXX">
-
-  </aside>
-</div>
-
-<footer class="muted">Feito com OpenStreetMap — grátis e sem limites.</footer>
-</div>
+    <footer class="muted">Sistema gratuito com OpenStreetMap + OSRM</footer>
+  </div>
 
 <script>
-// INICIALIZA MAPA OSM
+// ------------ MAPA GRATIS (Leaflet + OpenStreetMap) -----------------
+
 let map = L.map('map').setView([-22.9068, -43.1729], 12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 
-let routeControl = null;
-let distanceKm = 0;
+let routeLayer;
+let state = { perKm: 2.50, distanceKm: 0 };
 
-// GEOCODER gratuito simples via Nominatim
+// ---------- Função: Geocodificar (Endereço → Coordenadas) ------------
 async function geocode(address) {
-  const url = "https://nominatim.openstreetmap.org/search?format=json&q=" + encodeURIComponent(address);
-
-  const r = await fetch(url);
-  const data = await r.json();
-
-  if (!data[0]) return null;
-
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (data.length === 0) return null;
   return {
     lat: parseFloat(data[0].lat),
     lon: parseFloat(data[0].lon)
   };
 }
 
-// CALCULAR ROTA via OSRM (gratuito)
-async function calculate() {
-  const orig = document.getElementById("pickup").value;
-  const dest = document.getElementById("dropoff").value;
+// ---------- Função: Rota OSRM (grátis) -------------------------------
+async function getRoute(p1, p2) {
+  const url = `https://routing.openstreetmap.de/routed-car/route/v1/driving/${p1.lon},${p1.lat};${p2.lon},${p2.lat}?overview=full&geometries=geojson`;
 
-  if (!orig || !dest) {
-    alert("Informe origem e destino.");
-    return;
-  }
+  const res = await fetch(url);
+  const data = await res.json();
 
-  const A = await geocode(orig);
-  const B = await geocode(dest);
+  if (!data.routes) return null;
 
-  if (!A || !B) {
-    alert("Endereço não encontrado.");
-    return;
-  }
-
-  // Remove rota antiga
-  if (routeControl) map.removeControl(routeControl);
-
-  routeControl = L.Routing.control({
-    waypoints: [L.latLng(A.lat, A.lon), L.latLng(B.lat, B.lon)],
-    router: L.Routing.osrmv1({ serviceUrl: "https://router.project-osrm.org/route/v1" }),
-    lineOptions: { addWaypoints: false }
-  })
-  .on("routesfound", function(e){
-      distanceKm = e.routes[0].summary.totalDistance / 1000;
-      const price = (5 + distanceKm * 2.5).toFixed(2);
-      document.getElementById("estimate").innerText = price;
-
-      document.getElementById("summaryTitle").innerText = "Resumo da corrida";
-      document.getElementById("summaryContent").innerHTML =
-        `<strong>Origem:</strong> ${orig}<br>
-         <strong>Destino:</strong> ${dest}<br>
-         <strong>Distância:</strong> ${distanceKm.toFixed(2)} km<br>
-         <strong>Preço:</strong> R$ ${price}`;
-  })
-  .addTo(map);
+  return {
+    distance: data.routes[0].distance / 1000,
+    geometry: data.routes[0].geometry
+  };
 }
 
-document.getElementById("estimateBtn").onclick = calculate;
+// ---------- Calcular valor -------------------------------------------
+async function calculateRoute() {
+  const origin = document.getElementById("pickup").value;
+  const destination = document.getElementById("dropoff").value;
 
-// LOCALIZAÇÃO DO USUÁRIO
-document.getElementById("useMyLocation").onclick = () => {
+  if (!origin || !destination) return alert("Preencha origem e destino.");
+
+  const p1 = await geocode(origin);
+  const p2 = await geocode(destination);
+
+  if (!p1 || !p2) return alert("Endereço não encontrado.");
+
+  const route = await getRoute(p1, p2);
+  if (!route) return alert("Erro ao calcular rota.");
+
+  // Desenha rota no mapa
+  if (routeLayer) map.removeLayer(routeLayer);
+  routeLayer = L.geoJSON(route.geometry).addTo(map);
+  map.fitBounds(routeLayer.getBounds());
+
+  state.distanceKm = route.distance;
+
+  const price = (route.distance * state.perKm).toFixed(2);
+  document.getElementById("estimate").innerText = price;
+
+  document.getElementById("summaryTitle").innerText = "Resumo da corrida";
+  document.getElementById("summaryContent").innerHTML =
+    `<strong>Origem:</strong> ${origin}<br>` +
+    `<strong>Destino:</strong> ${destination}<br>` +
+    `<strong>Distância:</strong> ${route.distance.toFixed(2)} km<br>` +
+    `<strong>Estimativa:</strong> R$ ${price}`;
+}
+
+document.getElementById("estimateBtn").addEventListener("click", calculateRoute);
+
+// ----------- Localização do usuário --------------------------------
+document.getElementById("useMyLocation").addEventListener("click", () => {
   navigator.geolocation.getCurrentPosition(pos => {
     const { latitude, longitude } = pos.coords;
     document.getElementById("pickup").value = `${latitude}, ${longitude}`;
-  });
-};
+    map.setView([latitude, longitude], 15);
+  }, () => alert("Não foi possível acessar sua localização."));
+});
 
-// BOTÃO SOLICITAR
-document.getElementById("requestBtn").onclick = () => {
-  const owner = document.getElementById("ownerPhone").value.replace(/\D/g,"");
-  if (owner.length < 10) return alert("Número de motorista inválido.");
+// ----------- WhatsApp -----------------------------------------------
+document.getElementById("requestBtn").addEventListener("click", () => {
+  const name = document.getElementById("name").value || "-";
+  const phone = document.getElementById("phone").value || "-";
+  const pickup = document.getElementById("pickup").value;
+  const dropoff = document.getElementById("dropoff").value;
+  const notes = document.getElementById("notes").value || "-";
+  const owner = document.getElementById("ownerPhone").value.replace(/[^0-9]/g, "");
+  const price = document.getElementById("estimate").innerText;
 
-  const msg = encodeURIComponent(
-    `Pedido de corrida:\nDistância: ${distanceKm.toFixed(2)} km`
-  );
+  const msg =
+    `Pedido de corrida:%0A` +
+    `Nome: ${name}%0A` +
+    `Telefone: ${phone}%0A` +
+    `Origem: ${pickup}%0A` +
+    `Destino: ${dropoff}%0A` +
+    `Valor estimado: R$ ${price}%0A` +
+    `Obs: ${notes}`;
 
-  window.open(`https://wa.me/${owner}?text=${msg}`, "_blank");
-};
+  if (owner.length >= 10) window.open(`https://wa.me/${owner}?text=${msg}`, "_blank");
+  else alert("Informe o número do motorista.");
+});
 </script>
 
 </body>
