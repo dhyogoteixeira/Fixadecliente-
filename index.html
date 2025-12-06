@@ -108,7 +108,7 @@ let map = L.map('map').setView([-22.9068, -43.1729], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 
 let routeLayer;
-let state = { perKm: 2.50, distanceKm: 0 };
+let state = { perKm: 3.00, distanceKm: 0 };
 
 // ---------- Função: Geocodificar (Endereço → Coordenadas) ------------
 async function geocode(address) {
@@ -207,3 +207,4 @@ document.getElementById("requestBtn").addEventListener("click", () => {
 
 </body>
 </html>
+
