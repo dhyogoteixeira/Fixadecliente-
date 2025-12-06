@@ -1,107 +1,186 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DT Driver — Solicitar Corrida (Grátis, sem Google Maps)</title>
+
+<!-- Leaflet (MAPA GRATUITO) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- Leaflet Routing Machine (ROTEAMENTO GRÁTIS) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+<style>
+  :root{--bg:#0f172a;--card:#0b1220;--accent:#06b6d4;--muted:#9aa4b2;--glass:rgba(255,255,255,0.03)}
+  *{box-sizing:border-box;font-family:Inter,system-ui,Arial}
+  body{margin:0;background:linear-gradient(180deg,#071024,#071a2a);color:#e6eef6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .container{width:100%;max-width:980px}
+  header{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+  .logo{width:64px;height:64px;border-radius:12px;background:var(--glass);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+  h1{margin:0;font-size:20px}
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+  .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+  input, textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6eef6}
+  button{background:var(--accent);border:none;padding:10px 12px;border-radius:10px;color:#052027;font-weight:700;cursor:pointer}
+  .muted{color:var(--muted);font-size:13px}
+  #map{height:220px;border-radius:8px}
+  footer{margin-top:12px;color:var(--muted);font-size:13px}
+  @media(max-width:880px){.grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="container">
+<header>
+  <div class="logo">DT</div>
+  <div>
+    <h1>DT Driver — Solicitar Corrida</h1>
+    <div class="muted">Mapa e rota grátis (OpenStreetMap + OSRM)</div>
+  </div>
+</header>
+
+<div class="grid">
+  <section class="card">
+    <form id="rideForm">
+
+      <label>Nome do passageiro</label>
+      <input id="name" type="text" placeholder="Ex: João Silva" required>
+
+      <label>Telefone (WhatsApp)</label>
+      <input id="phone" type="tel" placeholder="55 21 99999-9999">
+
+      <label>Local de partida</label>
+      <input id="pickup" type="text" placeholder="Rua, número, bairro">
+
+      <label>Destino</label>
+      <input id="dropoff" type="text" placeholder="Rua, número, bairro">
+
+      <button type="button" id="useMyLocation" style="margin-top:8px;margin-bottom:8px">Usar minha localização</button>
+
+      <label>Observações</label>
+      <textarea id="notes" rows="3"></textarea>
+
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button type="button" id="estimateBtn">Calcular valor</button>
+        <button type="button" id="requestBtn">Solicitar corrida</button>
+      </div>
+
+    </form>
+  </section>
+
+  <aside class="card">
+    <h3 id="summaryTitle">Resumo</h3>
+    <div id="summaryContent" class="muted small">Preencha origem e destino.</div>
+
+    <div style="height:12px"></div>
+    <div id="map"></div>
+
+    <div style="height:12px"></div>
+    <div class="muted small">
+      <div><strong>Preço base:</strong> R$ 5,00</div>
+      <div><strong>Preço por km:</strong> R$ 2,50</div>
+      <div><strong>Estimativa:</strong> R$ <span id="estimate">-</span></div>
+    </div>
+
+    <label style="margin-top:12px">Número do motorista (WhatsApp)</label>
+    <input id="ownerPhone" type="tel" placeholder="55XXXXXXXXXXX">
+
+  </aside>
+</div>
+
+<footer class="muted">Feito com OpenStreetMap — grátis e sem limites.</footer>
+</div>
+
 <script>
-/* ----------------------------
-   SISTEMA DE CORRIDA SEM MAPS
-   ---------------------------- */
+// INICIALIZA MAPA OSM
+let map = L.map('map').setView([-22.9068, -43.1729], 12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-const state = {
-  base: 5.00,
-  perKm: 2.50,
-  distanceKm: 0,
-  userCoords: null
-};
+let routeControl = null;
+let distanceKm = 0;
 
-/* --- FÓRMULA DE HAVERSINE (Km entre 2 coordenadas) --- */
-function haversine(lat1, lon1, lat2, lon2) {
-  const R = 6371; // raio da terra
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
+// GEOCODER gratuito simples via Nominatim
+async function geocode(address) {
+  const url = "https://nominatim.openstreetmap.org/search?format=json&q=" + encodeURIComponent(address);
 
-  const a =
-      Math.sin(dLat/2) ** 2 +
-      Math.cos(lat1 * Math.PI / 180) *
-      Math.cos(lat2 * Math.PI / 180) *
-      Math.sin(dLon/2) ** 2;
+  const r = await fetch(url);
+  const data = await r.json();
 
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c; // distância em km
+  if (!data[0]) return null;
+
+  return {
+    lat: parseFloat(data[0].lat),
+    lon: parseFloat(data[0].lon)
+  };
 }
 
-/* --- Obter coordenadas do usuário --- */
-document.getElementById("useMyLocation").onclick = () => {
-  if (!navigator.geolocation) {
-    alert("Seu navegador não suporta geolocalização.");
+// CALCULAR ROTA via OSRM (gratuito)
+async function calculate() {
+  const orig = document.getElementById("pickup").value;
+  const dest = document.getElementById("dropoff").value;
+
+  if (!orig || !dest) {
+    alert("Informe origem e destino.");
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      const { latitude, longitude } = pos.coords;
-      state.userCoords = { latitude, longitude };
+  const A = await geocode(orig);
+  const B = await geocode(dest);
 
-      document.getElementById("pickup").value =
-        `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+  if (!A || !B) {
+    alert("Endereço não encontrado.");
+    return;
+  }
 
+  // Remove rota antiga
+  if (routeControl) map.removeControl(routeControl);
+
+  routeControl = L.Routing.control({
+    waypoints: [L.latLng(A.lat, A.lon), L.latLng(B.lat, B.lon)],
+    router: L.Routing.osrmv1({ serviceUrl: "https://router.project-osrm.org/route/v1" }),
+    lineOptions: { addWaypoints: false }
+  })
+  .on("routesfound", function(e){
+      distanceKm = e.routes[0].summary.totalDistance / 1000;
+      const price = (5 + distanceKm * 2.5).toFixed(2);
+      document.getElementById("estimate").innerText = price;
+
+      document.getElementById("summaryTitle").innerText = "Resumo da corrida";
       document.getElementById("summaryContent").innerHTML =
-        `<strong>Origem definida via GPS</strong><br>` +
-        `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-    },
-    err => alert("Não foi possível obter sua localização.")
-  );
-};
-
-/* --- Extrair coordenadas de um texto "lat, lng" --- */
-function parseCoords(text) {
-  const match = text.match(/(-?\d+\.\d+),\s*(-?\d+\.\d+)/);
-  return match ? { lat: parseFloat(match[1]), lng: parseFloat(match[2]) } : null;
+        `<strong>Origem:</strong> ${orig}<br>
+         <strong>Destino:</strong> ${dest}<br>
+         <strong>Distância:</strong> ${distanceKm.toFixed(2)} km<br>
+         <strong>Preço:</strong> R$ ${price}`;
+  })
+  .addTo(map);
 }
 
-/* --- Calcular distância --- */
-document.getElementById("estimateBtn").onclick = () => {
-  const pickup = document.getElementById("pickup").value.trim();
-  const dropoff = document.getElementById("dropoff").value.trim();
+document.getElementById("estimateBtn").onclick = calculate;
 
-  const originCoords = parseCoords(pickup);
-  const destCoords   = parseCoords(dropoff);
-
-  if (!originCoords || !destCoords) {
-    alert("Origem e destino precisam estar no formato coordenadas: -22.123456, -43.123456");
-    return;
-  }
-
-  const km = haversine(
-    originCoords.lat, originCoords.lng,
-    destCoords.lat,  destCoords.lng
-  );
-
-  const price = (state.base + km * state.perKm).toFixed(2);
-  state.distanceKm = km;
-
-  document.getElementById("estimate").innerText = price;
-
-  document.getElementById("summaryTitle").innerText = "Resumo da corrida";
-  document.getElementById("summaryContent").innerHTML =
-    `<strong>Origem:</strong> ${pickup}<br>` +
-    `<strong>Destino:</strong> ${dropoff}<br>` +
-    `<strong>Distância:</strong> ${km.toFixed(2)} km<br>` +
-    `<strong>Preço estimado:</strong> R$ ${price}`;
+// LOCALIZAÇÃO DO USUÁRIO
+document.getElementById("useMyLocation").onclick = () => {
+  navigator.geolocation.getCurrentPosition(pos => {
+    const { latitude, longitude } = pos.coords;
+    document.getElementById("pickup").value = `${latitude}, ${longitude}`;
+  });
 };
 
-/* --- Enviar via WhatsApp --- */
+// BOTÃO SOLICITAR
 document.getElementById("requestBtn").onclick = () => {
-  const owner = document.getElementById("ownerPhone").value.replace(/[^0-9]/g, "");
+  const owner = document.getElementById("ownerPhone").value.replace(/\D/g,"");
+  if (owner.length < 10) return alert("Número de motorista inválido.");
 
-  if (owner.length < 10) {
-    alert("Informe o número do motorista.");
-    return;
-  }
-
-  const msg =
-    `Pedido de corrida:%0A` +
-    `Origem: ${document.getElementById("pickup").value}%0A` +
-    `Destino: ${document.getElementById("dropoff").value}%0A` +
-    `Distância: ${state.distanceKm.toFixed(2)} km%0A` +
-    `Valor estimado: R$ ${document.getElementById("estimate").innerText}%0A`;
+  const msg = encodeURIComponent(
+    `Pedido de corrida:\nDistância: ${distanceKm.toFixed(2)} km`
+  );
 
   window.open(`https://wa.me/${owner}?text=${msg}`, "_blank");
 };
 </script>
+
+</body>
+</html>
