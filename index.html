@@ -1,306 +1,271 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>DT Driver — Solicitar Corrida (Cachoeiras de Macacu - RJ)</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Leaflet CSS/JS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<title>CodeFixer | Manutenção de Computadores e Redes</title>
 
-  <style>
-    :root{--bg:#0f172a;--card:#0b1220;--accent:#06b6d4;--muted:#9aa4b2;--glass: rgba(255,255,255,0.03)}
-    *{box-sizing:border-box;font-family:Inter,system-ui,Arial}
-    body{margin:0;background:linear-gradient(180deg,#071024 0%, #071a2a 100%);color:#e6eef6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-    .container{width:100%;max-width:980px}
-    header{display:flex;align-items:center;gap:16px;margin-bottom:20px}
-    .logo{width:64px;height:64px;border-radius:12px;background:var(--glass);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
-    h1{margin:0;font-size:20px}
-    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
-    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
-    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-    input, textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-bottom:10px}
-    .row{display:flex;gap:8px}
-    button{background:var(--accent);border:none;padding:10px 12px;border-radius:10px;color:#052027;font-weight:700;cursor:pointer}
-    .muted{color:var(--muted);font-size:13px}
-    .summary{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:10px}
-    .small{font-size:13px}
-    .map-placeholder{height:220px;border-radius:8px;overflow:hidden}
-    #map{height:100%;width:100%}
-    footer{margin-top:12px;color:var(--muted);font-size:13px}
-    .notice{background:rgba(255,255,255,0.03);padding:8px;border-radius:8px;margin-top:8px;color:var(--muted)}
-    @media(max-width:880px){.grid{grid-template-columns:1fr;}.logo{width:48px;height:48px}.card{padding:14px}}
-  </style>
+<meta name="description" content="CodeFixer - Especialista em manutenção de computadores e redes. Formatação, remoção de vírus, upgrade SSD, montagem de PC gamer, configuração de redes e suporte técnico profissional.">
+<meta name="keywords" content="manutenção de computador, técnico em informática, formatação de pc, remoção de vírus, redes de computadores, upgrade SSD, suporte técnico">
+<meta name="author" content="CodeFixer">
+
+<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1055/1055687.png">
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- AOS Animation -->
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Orbitron', sans-serif;
+    background: #0a0f1c;
+    color: #fff;
+    scroll-behavior: smooth;
+}
+
+header {
+    position: fixed;
+    width: 100%;
+    padding: 20px 10%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10,15,28,0.9);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #00f2ff;
+}
+
+nav a {
+    color: #fff;
+    margin-left: 25px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    color: #00f2ff;
+}
+
+.hero {
+    height: 100vh;
+    background: linear-gradient(to right, #000428, #004e92);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 10%;
+}
+
+.hero h1 {
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+
+.hero span {
+    color: #00f2ff;
+}
+
+.hero p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.btn {
+    padding: 14px 30px;
+    background: #00f2ff;
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: #fff;
+}
+
+section {
+    padding: 100px 10%;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 60px;
+    color: #00f2ff;
+}
+
+.services {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.card {
+    background: #111827;
+    padding: 30px;
+    border-radius: 10px;
+    transition: 0.4s;
+    border: 1px solid #00f2ff33;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 0 25px #00f2ff55;
+}
+
+.card i {
+    font-size: 40px;
+    margin-bottom: 20px;
+    color: #00f2ff;
+}
+
+footer {
+    text-align: center;
+    padding: 30px;
+    background: #000;
+}
+
+.social {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.social a {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.whatsapp {
+    background: #25D366;
+}
+
+.email {
+    background: #ea4335;
+}
+</style>
 </head>
+
 <body>
-  <div class="container">
-    <header>
-      <div class="logo">DT</div>
-      <div>
-        <h1>DT Driver — Solicitar Corrida</h1>
-        <div class="muted small">Cachoeiras de Macacu - RJ · OpenStreetMap</div>
-      </div>
-    </header>
 
-    <div class="grid">
-      <!-- FORM -->
-      <section class="card">
-        <form id="rideForm" onsubmit="return false">
-          <label for="name">Nome do passageiro</label>
-          <input id="name" type="text" placeholder="Ex: João Silva" required />
+<header>
+    <div class="logo">CodeFixer</div>
+    <nav>
+        <a href="#servicos">Serviços</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#contato">Contato</a>
+    </nav>
+</header>
 
-          <label for="phone">Telefone (WhatsApp)</label>
-          <input id="phone" type="tel" placeholder="55 21 99999-9999" />
-
-          <label for="pickup">Local de partida</label>
-          <input id="pickup" type="text" placeholder="Rua, número, bairro, cidade — ou lat, lon" required />
-
-          <label for="dropoff">Destino</label>
-          <input id="dropoff" type="text" placeholder="Rua, número, bairro, cidade — ou lat, lon" required />
-
-          <div style="display:flex;gap:8px;margin-top:8px;margin-bottom:8px;align-items:center">
-            <button type="button" id="useMyLocation">Usar minha localização</button>
-            <div class="muted small">(preenche coordenadas; tenta resolver endereço)</div>
-          </div>
-
-          <label for="notes">Observações</label>
-          <textarea id="notes" rows="3" placeholder="Mais bagagem, pets, etc"></textarea>
-
-          <div style="display:flex;gap:8px;margin-top:12px">
-            <button id="estimateBtn" type="button">Calcular valor estimado</button>
-            <button id="requestBtn" type="button">Solicitar corrida</button>
-          </div>
-
-          <div class="notice">Dica: se digitar apenas rua/número, o sistema tenta automaticamente completar com <strong>Cachoeiras de Macacu - RJ</strong>.</div>
-        </form>
-      </section>
-
-      <!-- SIDEBAR: RESUMO E MAPA (PLACEHOLDER) -->
-      <aside class="card">
-        <div class="summary">
-          <div class="small muted">Resumo da corrida</div>
-          <h3 id="summaryTitle">Sem pedido</h3>
-          <div id="summaryContent" class="muted small">Preencha origem e destino e clique em "Calcular valor".</div>
-        </div>
-
-        <div style="height:12px"></div>
-        <div class="map-placeholder">
-          <div id="map"></div>
-        </div>
-
-        <div style="height:12px"></div>
-        <div class="summary small">
-          <div><strong>Preço por km:</strong> R$ <span id="perKm">3.00</span></div>
-          <div><strong>Estimativa:</strong> R$ <span id="estimate">-</span></div>
-        </div>
-
-        <div style="height:12px"></div>
-        <label for="ownerPhone" class="muted small">Número do motorista/empresa (para envio WhatsApp)</label>
-        <input id="ownerPhone" type="tel" placeholder="55XXXXXXXXXXX" />
-      </aside>
+<section class="hero">
+    <div data-aos="fade-up">
+        <h1>Soluções Inteligentes em <span>Tecnologia</span></h1>
+        <p>Manutenção profissional de computadores e redes com alta performance e segurança.</p>
+        <a href="https://wa.me/5521999212228" class="btn" target="_blank">Fale no WhatsApp</a>
     </div>
+</section>
 
-    <footer class="muted">Feito com OpenStreetMap · Photon (Komoot) + Nominatim (fallback) + OSRM</footer>
-  </div>
+<section id="servicos">
+    <h2 class="section-title" data-aos="fade-up">Serviços Especializados</h2>
+    <div class="services">
 
+        <div class="card" data-aos="zoom-in">
+            <i class="fas fa-laptop-code"></i>
+            <h3>Formatação Profissional</h3>
+            <p>Instalação de sistemas, drivers, programas e otimização total.</p>
+        </div>
+
+        <div class="card" data-aos="zoom-in">
+            <i class="fas fa-shield-virus"></i>
+            <h3>Remoção de Vírus</h3>
+            <p>Proteção avançada e limpeza completa contra ameaças.</p>
+        </div>
+
+        <div class="card" data-aos="zoom-in">
+            <i class="fas fa-memory"></i>
+            <h3>Upgrade SSD e RAM</h3>
+            <p>Aumento de desempenho com tecnologia moderna.</p>
+        </div>
+
+        <div class="card" data-aos="zoom-in">
+            <i class="fas fa-network-wired"></i>
+            <h3>Infraestrutura de Redes</h3>
+            <p>Configuração de roteadores, Wi-Fi, cabeamento e redes empresariais.</p>
+        </div>
+
+        <div class="card" data-aos="zoom-in">
+            <i class="fas fa-tools"></i>
+            <h3>Manutenção Preventiva</h3>
+            <p>Limpeza interna, troca de pasta térmica e diagnóstico técnico.</p>
+        </div>
+
+        <div class="card" data-aos="zoom-in">
+            <i class="fas fa-headset"></i>
+            <h3>Suporte Técnico</h3>
+            <p>Atendimento remoto e presencial com rapidez e eficiência.</p>
+        </div>
+
+    </div>
+</section>
+
+<section id="sobre">
+    <h2 class="section-title" data-aos="fade-up">Sobre a CodeFixer</h2>
+    <p style="text-align:center; max-width:800px; margin:auto;" data-aos="fade-up">
+        A CodeFixer é especializada em manutenção de computadores e redes,
+        oferecendo soluções tecnológicas modernas, seguras e eficientes.
+        Compromisso com qualidade, desempenho e satisfação total do cliente.
+    </p>
+</section>
+
+<footer id="contato">
+    <p>© 2026 CodeFixer - Tecnologia e Performance</p>
+</footer>
+
+<div class="social">
+    <a href="https://wa.me/5521999212228" target="_blank" class="whatsapp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <a href="mailto:dhyogoteixeira33@gmail.com" class="email">
+        <i class="fas fa-envelope"></i>
+    </a>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 <script>
-/* ======= CONFIGURAÇÕES ======= */
-const CITY_HINT = "Cachoeiras de Macacu, RJ"; // cidade padrão para melhorar buscas
-const PER_KM = 3.00;
-
-/* ======= ESTADO ======= */
-let map = L.map('map').setView([-22.5163, -42.6817], 11); // view inicial aproximada RJ interior
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-
-let routeLayer = null;
-let state = { perKm: PER_KM, distanceKm: 0 };
-
-/* ======= UTIL: valida se texto é coordenada [lat, lon] ======= */
-function isCoords(text) {
-  return /^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(text);
-}
-function parseCoords(text) {
-  const parts = text.split(',');
-  return { lat: parseFloat(parts[0].trim()), lon: parseFloat(parts[1].trim()) };
-}
-
-/* ======= GEOCODE: Photon (Komoot) com fallback Nominatim ======= */
-async function photonSearch(query) {
-  const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&lang=pt`;
-  const res = await fetch(url);
-  if (!res.ok) return null;
-  const data = await res.json();
-  if (!data.features || !data.features.length) return null;
-  const place = data.features[0];
-  return { lat: place.geometry.coordinates[1], lon: place.geometry.coordinates[0], name: place.properties.name || place.properties.city || place.properties.state || place.properties.country };
-}
-
-async function nominatimSearch(query) {
-  const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`;
-  const res = await fetch(url, { headers: { 'Accept-Language': 'pt-BR,pt' }});
-  if (!res.ok) return null;
-  const data = await res.json();
-  if (!data.length) return null;
-  return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon), name: data[0].display_name };
-}
-
-/* geocode principal: aceita coordenadas, tenta Photon com city hint, tenta Photon direto, tenta Nominatim */
-async function geocode(address) {
-  if (!address || !address.trim()) return null;
-
-  // Se for coordenada, retorna direto
-  if (isCoords(address)) return parseCoords(address);
-
-  // Prepare queries to try (mais específico → geral)
-  const tries = [
-    `${address}, ${CITY_HINT}`,
-    address,
-    `${address} ${CITY_HINT}`,
-  ];
-
-  // Tenta Photon em cada variação
-  for (const q of tries) {
-    try {
-      const p = await photonSearch(q);
-      if (p) return { lat: p.lat, lon: p.lon };
-    } catch (e) { /* ignora e segue */ }
-  }
-
-  // fallback Nominatim
-  for (const q of tries) {
-    try {
-      const n = await nominatimSearch(q);
-      if (n) return { lat: n.lat, lon: n.lon };
-    } catch (e) { /* ignora */ }
-  }
-
-  return null;
-}
-
-/* ======= REVERSE GEOCODE (Nominatim) - opcional para mostrar rua quando usar GPS ======= */
-async function reverseGeocode(lat, lon) {
-  try {
-    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
-    const res = await fetch(url, { headers: { 'Accept-Language': 'pt-BR,pt' }});
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.display_name || null;
-  } catch (e) { return null; }
-}
-
-/* ======= ROTAS: OSRM (routing.openstreetmap.de) ======= */
-async function getRoute(p1, p2) {
-  // p1, p2 : {lat, lon}
-  const url = `https://routing.openstreetmap.de/routed-car/route/v1/driving/${p1.lon},${p1.lat};${p2.lon},${p2.lat}?overview=full&geometries=geojson`;
-  const res = await fetch(url);
-  if (!res.ok) return null;
-  const data = await res.json();
-  if (!data.routes || !data.routes.length) return null;
-  const route = data.routes[0];
-  return { distanceKm: route.distance / 1000, geometry: route.geometry };
-}
-
-/* ======= FUNÇÃO PRINCIPAL: calcular rota e estimativa ======= */
-async function calculateRoute() {
-  const rawOrigin = document.getElementById("pickup").value.trim();
-  const rawDest = document.getElementById("dropoff").value.trim();
-
-  if (!rawOrigin || !rawDest) return alert("Preencha origem e destino.");
-
-  // Geocode both
-  const p1 = await geocode(rawOrigin);
-  if (!p1) return alert("Não foi possível localizar a origem. Tente um endereço mais completo.");
-  const p2 = await geocode(rawDest);
-  if (!p2) return alert("Não foi possível localizar o destino. Tente um endereço mais completo.");
-
-  // Get route from OSRM
-  const route = await getRoute(p1, p2);
-  if (!route) return alert("Erro ao calcular rota. Tente novamente mais tarde.");
-
-  // Draw route
-  if (routeLayer) map.removeLayer(routeLayer);
-  routeLayer = L.geoJSON(route.geometry, { style: { color: '#06b6d4', weight: 4 } }).addTo(map);
-
-  // add markers (origin/dest)
-  const originMarker = L.circleMarker([p1.lat, p1.lon], { radius:6, color:'#00ffdd', fillColor:'#00ffdd', fillOpacity:1 }).bindPopup("Origem").addTo(map);
-  const destMarker   = L.circleMarker([p2.lat, p2.lon], { radius:6, color:'#ffcc00', fillColor:'#ffcc00', fillOpacity:1 }).bindPopup("Destino").addTo(map);
-
-  // group and fit
-  const group = L.featureGroup([routeLayer, originMarker, destMarker]);
-  map.fitBounds(group.getBounds().pad(0.15));
-
-  // update state & UI
-  state.distanceKm = route.distanceKm;
-  const price = (state.distanceKm * state.perKm).toFixed(2);
-  document.getElementById("estimate").innerText = price;
-
-  document.getElementById("summaryTitle").innerText = "Resumo da corrida";
-  document.getElementById("summaryContent").innerHTML =
-    `<strong>Origem:</strong> ${rawOrigin}<br>` +
-    `<strong>Destino:</strong> ${rawDest}<br>` +
-    `<strong>Distância:</strong> ${state.distanceKm.toFixed(2)} km<br>` +
-    `<strong>Estimativa:</strong> R$ ${price}`;
-}
-
-/* ======= BOTÕES e EVENTOS ======= */
-document.getElementById("estimateBtn").addEventListener("click", async () => {
-  document.getElementById("estimate").innerText = "…";
-  await calculateRoute();
+AOS.init({
+    duration: 1000,
+    once: true
 });
-
-document.getElementById("requestBtn").addEventListener("click", () => {
-  const name = document.getElementById("name").value || "-";
-  const phone = document.getElementById("phone").value || "-";
-  const pickup = document.getElementById("pickup").value;
-  const dropoff = document.getElementById("dropoff").value;
-  const notes = document.getElementById("notes").value || "-";
-  const owner = document.getElementById("ownerPhone").value.replace(/[^0-9]/g, "");
-  const price = document.getElementById("estimate").innerText;
-
-  if (!owner || owner.length < 10) return alert("Informe o número do motorista para envio via WhatsApp.");
-
-  const msg =
-    `Pedido de corrida:%0A` +
-    `Nome: ${name}%0A` +
-    `Telefone: ${phone}%0A` +
-    `Origem: ${pickup}%0A` +
-    `Destino: ${dropoff}%0A` +
-    `Distância: ${state.distanceKm.toFixed(2)} km%0A` +
-    `Valor estimado: R$ ${price}%0A` +
-    `Obs: ${notes}`;
-
-  window.open(`https://wa.me/${owner}?text=${msg}`, "_blank");
-});
-
-/* ======= USAR MINHA LOCALIZAÇÃO ======= */
-document.getElementById("useMyLocation").addEventListener("click", () => {
-  if (!navigator.geolocation) return alert("Geolocalização não suportada no navegador.");
-  navigator.geolocation.getCurrentPosition(async pos => {
-    const { latitude, longitude } = pos.coords;
-    // preenche as coordenadas no campo pickup
-    const coordText = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-    document.getElementById("pickup").value = coordText;
-
-    // tenta reverse geocode para mostrar endereço legível
-    const human = await reverseGeocode(latitude, longitude);
-    if (human) {
-      // se encontrou, atualiza campo com nome mais legível (mas mantém coords para precisão)
-      document.getElementById("pickup").value = human + ` (${coordText})`;
-    }
-
-    // move o mapa para a localização
-    map.setView([latitude, longitude], 15);
-  }, err => {
-    alert("Não foi possível acessar sua localização. Verifique permissões.");
-  }, { enableHighAccuracy: true, timeout: 10000 });
-});
-
-/* Ajusta o valor exibido por km no HTML */
-document.getElementById("perKm").innerText = PER_KM.toFixed(2);
-state.perKm = PER_KM;
-
-/* ======= FIM ======= */
 </script>
+
 </body>
 </html>
