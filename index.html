@@ -3,247 +3,254 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CodeFixer - Sistema Profissional</title>
+<title>CodeFixer | Sistema de Orçamentos Profissional</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins', sans-serif;
-}
-
 body{
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    min-height:100vh;
-    padding:30px;
-    color:white;
+    margin:0;
+    font-family:'Montserrat', sans-serif;
+    background:#0f172a;
+    color:#fff;
 }
 
 header{
-    text-align:center;
-    margin-bottom:30px;
-    animation: fadeIn 1s ease-in-out;
-}
-
-header img{
-    width:120px;
-    margin-bottom:10px;
-}
-
-header h1{
-    font-size:28px;
-    font-weight:700;
-}
-
-.form-container{
-    background: rgba(255,255,255,0.08);
+    background:linear-gradient(90deg,#0ea5e9,#2563eb);
     padding:20px;
-    border-radius:15px;
-    backdrop-filter: blur(10px);
-    box-shadow:0 8px 20px rgba(0,0,0,0.3);
-    margin-bottom:30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
 
-input{
+.logo{
+    font-size:24px;
+    font-weight:800;
+    letter-spacing:1px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:30px;
+}
+
+.hero{
+    display:flex;
+    gap:30px;
+    align-items:center;
+    margin-bottom:40px;
+}
+
+.hero img{
+    width:400px;
+    border-radius:15px;
+}
+
+.card{
+    background:#1e293b;
+    padding:25px;
+    border-radius:15px;
+    margin-bottom:30px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.4);
+}
+
+input, textarea{
     width:100%;
     padding:12px;
     margin:8px 0;
     border:none;
     border-radius:8px;
+    font-family:'Montserrat';
 }
 
 button{
-    padding:12px;
-    width:100%;
+    padding:10px 18px;
     border:none;
     border-radius:8px;
-    cursor:pointer;
     font-weight:600;
-    transition:0.3s;
+    cursor:pointer;
+    margin-top:10px;
 }
 
-.btn-primary{
-    background:#00c6ff;
-    color:white;
+.btn-primary{background:#0ea5e9;color:#fff;}
+.btn-edit{background:#f59e0b;color:#fff;}
+.btn-delete{background:#ef4444;color:#fff;}
+.btn-pdf{background:#10b981;color:#fff;}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+    background:#fff;
+    color:#000;
+    border-radius:10px;
+    overflow:hidden;
 }
 
-.btn-primary:hover{
-    background:#0072ff;
-    transform:scale(1.05);
+th,td{
+    padding:12px;
+    border-bottom:1px solid #ddd;
 }
 
-.card{
-    background:white;
-    color:#333;
-    padding:20px;
-    border-radius:15px;
-    margin-top:15px;
-    box-shadow:0 6px 15px rgba(0,0,0,0.2);
-    animation: fadeUp 0.5s ease;
-}
-
-.card button{
-    margin-top:8px;
-}
-
-.btn-pdf{
-    background:#1565c0;
-    color:white;
-}
-
-.btn-whats{
-    background:#25D366;
-    color:white;
-}
-
-.btn-delete{
-    background:red;
-    color:white;
-}
-
-@keyframes fadeIn{
-    from{opacity:0;}
-    to{opacity:1;}
-}
-
-@keyframes fadeUp{
-    from{opacity:0; transform:translateY(20px);}
-    to{opacity:1; transform:translateY(0);}
+th{
+    background:#0ea5e9;
+    color:#fff;
 }
 </style>
 </head>
 <body>
 
 <header>
-    <img src="https://images.unsplash.com/photo-1581091870627-3c2b7c5a4c9b?auto=format&fit=crop&w=300&q=80">
-    <h1>CodeFixer - Sistema de Orçamentos</h1>
+<div class="logo">🚀 CodeFixer</div>
+<div>Sistema Empresarial de Orçamentos</div>
 </header>
 
-<div class="form-container">
-    <input type="text" id="nome" placeholder="Nome do Cliente">
-    <input type="text" id="telefone" placeholder="Telefone com DDD">
-    <input type="text" id="endereco" placeholder="Endereço">
-    <input type="text" id="servico" placeholder="Tipo de Serviço">
-    <input type="number" id="valor" placeholder="Valor do Serviço">
-    <input type="date" id="data">
-    <input type="time" id="hora">
-    <button class="btn-primary" onclick="adicionar()">Adicionar Cliente</button>
+<div class="container">
+
+<div class="hero">
+<img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80">
+<div>
+<h1>Sistema Profissional</h1>
+<p>Controle completo de clientes e geração de orçamento em PDF.</p>
+</div>
 </div>
 
-<div id="lista"></div>
+<div class="card">
+<h2>Novo Orçamento</h2>
+
+<input type="hidden" id="editIndex">
+
+<input type="text" id="nome" placeholder="Nome do Cliente">
+<input type="text" id="endereco" placeholder="Endereço">
+<input type="text" id="telefone" placeholder="Telefone">
+<input type="datetime-local" id="datahora">
+<textarea id="servico" placeholder="Descrição do Serviço"></textarea>
+<input type="number" id="valor" placeholder="Valor R$">
+
+<button class="btn-primary" onclick="salvar()">Salvar Orçamento</button>
+</div>
+
+<div class="card">
+<h2>Clientes Cadastrados</h2>
+
+<table>
+<thead>
+<tr>
+<th>Nome</th>
+<th>Telefone</th>
+<th>Serviço</th>
+<th>Valor</th>
+<th>Ações</th>
+</tr>
+</thead>
+<tbody id="lista"></tbody>
+</table>
+
+</div>
+
+</div>
 
 <script>
-let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
-let contadorOrcamento = parseInt(localStorage.getItem("contadorOrcamento")) || 1;
-let lista = document.getElementById("lista");
+let clientes = JSON.parse(localStorage.getItem("clientesCodeFixer")) || [];
 
 function salvar(){
-    localStorage.setItem("clientes", JSON.stringify(clientes));
-    localStorage.setItem("contadorOrcamento", contadorOrcamento);
+    const nome = document.getElementById("nome").value;
+    const endereco = document.getElementById("endereco").value;
+    const telefone = document.getElementById("telefone").value;
+    const datahora = document.getElementById("datahora").value;
+    const servico = document.getElementById("servico").value;
+    const valor = document.getElementById("valor").value;
+    const editIndex = document.getElementById("editIndex").value;
+
+    if(nome === "") return alert("Digite o nome do cliente!");
+
+    const cliente = {nome,endereco,telefone,datahora,servico,valor};
+
+    if(editIndex === ""){
+        clientes.push(cliente);
+    } else {
+        clientes[editIndex] = cliente;
+        document.getElementById("editIndex").value="";
+    }
+
+    localStorage.setItem("clientesCodeFixer", JSON.stringify(clientes));
+    limpar();
+    listar();
 }
 
-function adicionar(){
-    const cliente = {
-        nome: nome.value,
-        telefone: telefone.value,
-        endereco: endereco.value,
-        servico: servico.value,
-        valor: parseFloat(valor.value),
-        data: data.value,
-        hora: hora.value
-    };
-
-    clientes.push(cliente);
-    salvar();
-    mostrar();
-
-    document.querySelectorAll("input").forEach(i => i.value = "");
-}
-
-function excluir(index){
-    clientes.splice(index,1);
-    salvar();
-    mostrar();
-}
-
-function mostrar(){
-    lista.innerHTML = "";
+function listar(){
+    const lista = document.getElementById("lista");
+    lista.innerHTML="";
     clientes.forEach((c,i)=>{
         lista.innerHTML += `
-        <div class="card">
-            <b>👤 ${c.nome}</b><br>
-            📞 ${c.telefone}<br>
-            📍 ${c.endereco}<br>
-            🛠 ${c.servico}<br>
-            💰 R$ ${c.valor.toFixed(2)}<br>
-            📅 ${c.data} ⏰ ${c.hora}<br>
-
-            <button class="btn-pdf" onclick="gerarOrcamento(${i})">🧾 Gerar PDF</button>
-            <button class="btn-whats" onclick="enviarWhatsApp(${i})">📱 WhatsApp</button>
-            <button class="btn-delete" onclick="excluir(${i})">Excluir</button>
-        </div>`;
+        <tr>
+            <td>${c.nome}</td>
+            <td>${c.telefone}</td>
+            <td>${c.servico}</td>
+            <td>R$ ${c.valor}</td>
+            <td>
+                <button class="btn-edit" onclick="editar(${i})">Editar</button>
+                <button class="btn-delete" onclick="excluir(${i})">Excluir</button>
+                <button class="btn-pdf" onclick="gerarPDF(${i})">PDF</button>
+            </td>
+        </tr>`;
     });
 }
 
-function gerarOrcamento(index){
+function editar(i){
+    const c = clientes[i];
+    document.getElementById("nome").value=c.nome;
+    document.getElementById("endereco").value=c.endereco;
+    document.getElementById("telefone").value=c.telefone;
+    document.getElementById("datahora").value=c.datahora;
+    document.getElementById("servico").value=c.servico;
+    document.getElementById("valor").value=c.valor;
+    document.getElementById("editIndex").value=i;
+}
+
+function excluir(i){
+    clientes.splice(i,1);
+    localStorage.setItem("clientesCodeFixer", JSON.stringify(clientes));
+    listar();
+}
+
+function gerarPDF(i){
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    const cliente = clientes[index];
-    const numeroAtual = contadorOrcamento++;
-    const dataAtual = new Date().toLocaleDateString("pt-BR");
-
-    salvar();
+    const c = clientes[i];
 
     doc.setFontSize(18);
-    doc.text("CodeFixer - ORÇAMENTO", 105, 20, { align: "center" });
+    doc.text("CodeFixer - Orçamento",20,20);
 
-    doc.text(`Orçamento Nº ${numeroAtual}`, 10, 35);
-    doc.text(`Data: ${dataAtual}`, 150, 35);
+    doc.setFontSize(12);
+    doc.text(`Cliente: ${c.nome}`,20,40);
+    doc.text(`Telefone: ${c.telefone}`,20,50);
+    doc.text(`Endereço: ${c.endereco}`,20,60);
+    doc.text(`Data/Hora: ${c.datahora}`,20,70);
+    doc.text(`Serviço: ${c.servico}`,20,80);
+    doc.text(`Valor: R$ ${c.valor}`,20,90);
 
-    doc.line(10, 40, 200, 40);
-
-    doc.text(`Cliente: ${cliente.nome}`, 10, 55);
-    doc.text(`Telefone: ${cliente.telefone}`, 10, 65);
-    doc.text(`Serviço: ${cliente.servico}`, 10, 75);
-    doc.text(`Valor: R$ ${cliente.valor.toFixed(2)}`, 10, 85);
-
-    doc.line(10, 120, 90, 120);
-    doc.text("Assinatura do Cliente", 10, 130);
-
-    doc.save(`Orcamento_${numeroAtual}.pdf`);
+    doc.save(`Orcamento_${c.nome}.pdf`);
 }
 
-function enviarWhatsApp(index){
-    const cliente = clientes[index];
-    let numero = cliente.telefone.replace(/\D/g,'');
-    if(!numero.startsWith("55")){
-        numero = "55" + numero;
-    }
-
-    const mensagem =
-`Olá ${cliente.nome} 👋
-Segue seu orçamento CodeFixer:
-
-🛠 ${cliente.servico}
-💰 R$ ${cliente.valor.toFixed(2)}
-📅 ${cliente.data}
-⏰ ${cliente.hora}
-
-Aguardamos confirmação! 💻`;
-
-    window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`,'_blank');
+function limpar(){
+    document.getElementById("nome").value="";
+    document.getElementById("endereco").value="";
+    document.getElementById("telefone").value="";
+    document.getElementById("datahora").value="";
+    document.getElementById("servico").value="";
+    document.getElementById("valor").value="";
 }
 
-mostrar();
+listar();
 </script>
 
 </body>
 </html>
+
+
 
 
 
