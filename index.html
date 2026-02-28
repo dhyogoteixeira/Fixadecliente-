@@ -8,26 +8,41 @@
 <style>
 body{
     font-family: Arial;
-    background:#111;
+    background:#0f172a;
     color:white;
     padding:20px;
 }
-input, button{
+h2{
+    text-align:center;
+}
+input, select, button{
     width:100%;
     padding:12px;
-    margin:5px 0;
+    margin:6px 0;
     border:none;
     border-radius:8px;
+}
+input, select{
+    background:#1e293b;
+    color:white;
 }
 button{
     background:#00c853;
     color:white;
     font-weight:bold;
+    cursor:pointer;
+}
+button:hover{
+    opacity:0.9;
 }
 .card{
-    background:#1e1e1e;
+    background:#1e293b;
     padding:15px;
     border-radius:10px;
+    margin-top:12px;
+}
+.delete{
+    background:red;
     margin-top:10px;
 }
 </style>
@@ -36,9 +51,23 @@ button{
 
 <h2>📋 Cadastro de Clientes</h2>
 
-<input type="text" id="nome" placeholder="Nome">
-<input type="text" id="telefone" placeholder="Telefone">
-<input type="text" id="endereco" placeholder="Endereço">
+<input type="text" id="nome" placeholder="Nome do Cliente" required>
+<input type="text" id="telefone" placeholder="Telefone" required>
+<input type="text" id="endereco" placeholder="Endereço" required>
+
+<select id="servico">
+    <option value="">Tipo de Serviço</option>
+    <option>Formatação</option>
+    <option>Limpeza</option>
+    <option>Troca de SSD</option>
+    <option>Instalação de Programas</option>
+    <option>Montagem de PC</option>
+    <option>Outro</option>
+</select>
+
+<input type="date" id="data">
+<input type="time" id="hora">
+
 <button onclick="salvar()">Salvar Cliente</button>
 
 <div id="lista"></div>
@@ -47,29 +76,46 @@ button{
 let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
 
 function salvar(){
+
+    if(nome.value === "" || telefone.value === "" || endereco.value === ""){
+        alert("Preencha os campos obrigatórios!");
+        return;
+    }
+
     const cliente = {
         nome: nome.value,
         telefone: telefone.value,
-        endereco: endereco.value
+        endereco: endereco.value,
+        servico: servico.value,
+        data: data.value,
+        hora: hora.value
     };
 
     clientes.push(cliente);
     localStorage.setItem("clientes", JSON.stringify(clientes));
+
     nome.value = "";
     telefone.value = "";
     endereco.value = "";
+    servico.value = "";
+    data.value = "";
+    hora.value = "";
+
     mostrar();
 }
 
 function mostrar(){
     lista.innerHTML = "";
+
     clientes.forEach((c,i)=>{
         lista.innerHTML += `
         <div class="card">
-            <b>${c.nome}</b><br>
-            ${c.telefone}<br>
-            ${c.endereco}<br>
-            <button onclick="excluir(${i})">Excluir</button>
+            <b>👤 ${c.nome}</b><br>
+            📞 ${c.telefone}<br>
+            📍 ${c.endereco}<br>
+            🛠 Serviço: ${c.servico || "-"}<br>
+            📅 ${c.data || "-"} ⏰ ${c.hora || "-"}<br>
+            <button class="delete" onclick="excluir(${i})">Excluir</button>
         </div>`;
     });
 }
@@ -85,5 +131,7 @@ mostrar();
 
 </body>
 </html>
+
+
 
 
